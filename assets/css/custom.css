@@ -1,3 +1,7 @@
+body{
+    width: 98vw;
+}
+
 .hidden{
     display: none;
 }
@@ -6,7 +10,8 @@
     max-width: 800px;
     margin: 0 auto;
     padding-bottom: 50px;
-    padding-right: 20px;
+    padding-right: 1em;
+    padding-left: 1em;
 }
 
 a:link, a:visited, a:hover, a:active {
@@ -14,16 +19,29 @@ a:link, a:visited, a:hover, a:active {
     color: #2f4f4f;
 }
 
-li {
+ol{
     width: 100%;
-    padding: 10px 10px 5px 10px;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    width: 99%;
+    padding: 10px 5px 5px 5px;
     margin: 0;
     height: 25px;
     border-radius: 10px;
+    position: relative;
+    overflow: hidden;
 }
 
 li span {
-    float: right;
+    background: white;
+    z-index: 13;
+    position: absolute;
+    right: 0;
+    top: 10px;
+    border-radius: 10px;
 }
 
 li span a {
@@ -47,7 +65,7 @@ li span a:hover{
     max-width: 50px;
     max-height: 50px;
     position: fixed;
-    right: 30px;
+    right: 10px;
     bottom: 30px;
     background-color: white;
 }
@@ -63,8 +81,9 @@ li span a:hover{
 .cmd_btn{
     font-size: 30px;
     text-align: center;
-    width: 15em;
-    margin: 0 auto;
+    margin: 0;
+    width: 98wv;
+    padding: 0;
 }
 
 .cmd_btn a{
@@ -90,4 +109,6 @@ li span a:hover{
     background-color: #2f4f4f;
     color: white;
     padding: 10px;
+    margin: 0;
 }
+
