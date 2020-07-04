@@ -1,41 +1,36 @@
 body{
-    width: 98vw;
-}
-
-.hidden{
-    display: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
 }
 
 .container{
     max-width: 800px;
     margin: 0 auto;
-    padding-bottom: 50px;
-    padding-right: 1em;
-    padding-left: 1em;
+    padding: 0;
 }
 
 a:link, a:visited, a:hover, a:active {
     text-decoration: none;
     color: #2f4f4f;
+    opacity: 0.7;
 }
 
 ol{
-    width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 5px 0 5em;
+    color: black;
 }
 
 li {
-    width: 99%;
     padding: 10px 5px 5px 5px;
     margin: 0;
     height: 25px;
     border-radius: 10px;
     position: relative;
-    overflow: hidden;
 }
 
-li span {
+.url_ctrl {
     background: white;
     z-index: 13;
     position: absolute;
@@ -44,13 +39,18 @@ li span {
     border-radius: 10px;
 }
 
-li span a {
+.url_ctrl a {
     padding: 5px;
     margin: 10px;
     opacity: 0.8;
 }
 
-li span a:hover{
+.url_name {
+    overflow: hidden;
+    height: 1.2em;
+}
+
+a:hover{
     opacity: 1;
 }
 
@@ -59,15 +59,67 @@ li span a:hover{
     height: 23px;
 }
 
-#add_station{
-    font-size: 50px;
-    border-radius: 50%;
-    max-width: 50px;
-    max-height: 50px;
+#title_row{
+    display: inline-block;
+    width: 95%;
+    padding: 10px 5px 20px 5em;
+    padding-left: 4em;
+}
+
+#title_row h1 {
+    font-size: 2em;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    max-width: 80%;
+}
+
+#title_row h1 span{
+    opacity: 0.5;
+    font-size: 0.7em;
+}
+
+#song_title{
+    width: 100%;
+    text-align: center;
     position: fixed;
-    right: 10px;
-    bottom: 30px;
-    background-color: white;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    color: #e2bf99;
+    padding: 10px;
+    margin: 0;
+    z-index: 3;
+}
+
+#multimedia_ctrl{
+    height: 100vh;
+    background-color: black;
+    color: white;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+}
+
+#multimedia_ctrl a{
+    padding: 0;
+    margin: 2px;
+    width: 2em;
+    height: 1.5em;
+    display: block;
+    text-align: center;
+    line-height: 1.5em;
+    font-size: 1.5em;
+    color: #e2bf99;
+}
+
+#add_station{
+    font-size: 3em;
+    color: #e2bf99;
+    margin: 10px 2px 30px 2px;
 }
 
 #add_station span{
@@ -78,37 +130,11 @@ li span a:hover{
     opacity: 1;
 }
 
-.cmd_btn{
-    font-size: 30px;
-    text-align: center;
-    margin: 0;
-    width: 98wv;
-    padding: 0;
-}
-
-.cmd_btn a{
-    margin: 15px;
-    opacity: 0.7;
-}
-
-.cmd_btn a:hover{
-    opacity: 1;
-}
-
-.cmd_btn p{
-    text-decoration: underline;
-    text-align: center;
-}
-
-#song_title{
-    width: 100%;
-    text-align: center;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    background-color: #2f4f4f;
-    color: white;
-    padding: 10px;
-    margin: 0;
+#sort_cmd{
+    width: 1em;
+    font-size: 1.5em;
+    float: left;
+    margin-top: 10px;
+    margin-left: 0;
 }
 
