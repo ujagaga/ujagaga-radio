@@ -2,7 +2,10 @@
 
 The idea is to enable controlling a central radio via any web enabled device (phone). This project is intended only for linux. 
 It is tested on Ubuntu20.
-We are using Media Player Daemon to play an internet radio stream and Media Player Client to controll it.
+We are using Media Player Daemon to play an internet radio stream and Media Player Client to controll it. This is a simpler version. A more complexed version with multimedial commands is available at another git branch. After cloning this repository just do a:
+
+    git checkout multimedial
+
 
 ### Setting up ###
 
@@ -10,7 +13,6 @@ The script uses xdotool to control volume, mpd and mpc to play a stream and pyth
 
     sudo apt install mpd mpc xdotool python3-pip
     pip3 install flask
-
 
 The next step is to configure the configuration file: 
     
