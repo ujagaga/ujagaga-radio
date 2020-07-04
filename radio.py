@@ -118,7 +118,10 @@ def home():
         cur_cmd = ['mpc', CMD_CURRENT]
         current_text = run_process(cur_cmd)
         if len(current_text) > 2:
-            song_title = current_text.split(':')[1]
+            try:
+                song_title = current_text.split(':')[1]
+            except:
+                song_title = current_text
         else:
             song_title = ''
 
