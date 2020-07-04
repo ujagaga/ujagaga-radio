@@ -4,6 +4,13 @@ The idea is to enable controlling a central radio via any web enabled device (ph
 It is tested on Ubuntu20.
 We are using Media Player Daemon to play an internet radio stream and Media Player Client to controll it.
 
+### Note ###
+
+This is the first and simplified version. A more advanced version with multimedial commands is available at:
+
+    https://github.com/ohanacode-dev/OhanaCode-IOT/tree/master/ohana-radio
+    
+
 ### Setting up ###
 
 The script uses xdotool to control volume, mpd and mpc to play a stream, python Flask to display the web interface. Install them all.
