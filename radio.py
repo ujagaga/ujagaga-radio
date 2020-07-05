@@ -5,8 +5,8 @@ import os
 import subprocess
 from socket import socket, AF_INET, SOCK_DGRAM
 
-#WEB_PORT = 8888
-WEB_PORT = 80 	# Use this as root
+WEB_PORT = 8888
+#WEB_PORT = 80 	# Use this as root
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
