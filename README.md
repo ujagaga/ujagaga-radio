@@ -81,6 +81,8 @@ If you wish to use it without root priviledges, you need to change the port at t
 or if it is on a remote computer: 
 
     http://192.168.x.x:8888 
+
+If you wish to add pushbutton support, checkout the gpio_control folder
     
 ## Contact ##
 

@@ -1,0 +1,12 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This is an example of a script to run at startup. Update the user name below.
+
+USER=user_name
+
+sudo /home/$USER/ohana-radio/ohana-radio.py &
+sudo /home/$USER/ohana-radio/gpiocmd.py &
+
+exit 0
