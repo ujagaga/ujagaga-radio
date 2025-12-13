@@ -87,3 +87,6 @@ If you wish to add pushbutton support, checkout the gpio_control folder
 ## Contact ##
 
 * [My web page](http://www.radinaradionica.com)
+
+
+cat /boot/armbianEnv.txt verbosity=1 bootlogo=false console=both disp_mode=1920x1080p60 overlay_prefix=sun8i-h3 overlays=usbhost2 usbhost3 tve sun8i-h3-i2c0 rootdev=UUID=c4984777-1b6d-4178-a487-06fc6accea09 rootfstype=ext4 usbstoragequirks=0x2537:0x1066:u,0x2537:0x1068:u
