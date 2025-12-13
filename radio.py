@@ -1,140 +1,211 @@
 #!/usr/bin/env python3
 
-from flask import Flask, request, render_template, send_from_directory, redirect, url_for
-import os
-import subprocess
+from spi_lcd_16x2 import LCD1602
+import fcntl
+import struct
+from playlist import PLAYLIST
+import OPi.GPIO as GPIO
 import time
-
-WEB_PORT = 8888
-#WEB_PORT = 80 	# Use this as root
-
-SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
-
-app = Flask(__name__, static_url_path='/assets', static_folder='assets')
-app.secret_key = 'OCRadio1303153011SecretKey'
-
-url_list = []
-current = 0
-CMD_PLAY = "play"
-CMD_STOP = "stop"
-CMD_CLEAR = "clear"
-CMD_ADD = "add"
-CMD_NEXT = "next"
-CMD_LIST = "playlist"
-CMD_DEL = "del"
-CMD_CURRENT = "current"
+import subprocess
+import threading
+import socket
+import json
+import os
 
 
-def run_process(command_list):
-    result = subprocess.run(command_list, stdout=subprocess.PIPE)
-    print("Running: {}".format(command_list))
+BTN_NEXT = 11
+BTN_PREV = 13
+# BTN_VOLUP = 19
+# BTN_VOLDOWN = 18
 
-    return str(result.stdout, 'utf-8')
+lcd = LCD1602(i2c_addr=0x27, i2c_bus=0)
+ip_message = ""
+current_station_id = 0
+current_volume = 20
+ipc_socket_path = "/tmp/mpvsocket"
+mpv_process = None
+mpv_lock = threading.Lock()
 
-
-def load_cfg():
-    global url_list
-    global current
-
-    # Get playlist
-    cmd = ['mpc', CMD_LIST]
-    ret_val = run_process(cmd)
-    if ret_val.endswith('\n'):
-        ret_val = ret_val[:-1]
-    new_url_list = ret_val.split('\n')
-    # print(new_url_list)
-
-    # Populate list to display
-    url_list = []
-    for i in range(0, len(new_url_list)):
-        item = new_url_list[i]
-        name = item.split(':')[0]
-        if name.startswith('http'):
-            name = 'Loading...'
-
-        data = {"name": name, "href": item, "id": len(url_list) + 1}
-        url_list.append(data)
-
-    # get currently playing
-    current = 0
-    cmd = ['mpc']
-    status = run_process(cmd).split('\n')
-
-    for i in range(0, len(status)):
-        if '[playing]' in status[i]:
-            current = int(status[i].split('#')[1].split('/')[0])
+def get_wifi_ip(iface="wlan0"):
+    """
+    Returns IPv4 address of the given interface, or None if no IP is assigned.
+    """
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        ifreq = struct.pack("256s", iface.encode("utf-8")[:15])
+        res = fcntl.ioctl(sock.fileno(), 0x8915, ifreq)  # SIOCGIFADDR
+        return socket.inet_ntoa(res[20:24])
+    except OSError:
+        return None
 
 
-@app.route('/', methods=['GET', 'POST'])
-def home():
-    global current
+def gpio_setup():
+    GPIO.setboard(GPIO.ZERO)
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(BTN_NEXT, GPIO.IN,
+               pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(BTN_PREV, GPIO.IN,
+               pull_up_down=GPIO.PUD_UP)
 
-    load_cfg()
 
-    action = request.args.get('action', '')
-    id = int(request.args.get('id', '0'))
-
-    if action == 'add':
-        url = request.args.get('url', '').replace('"', '')
-
-        if url != '':
-            cmd = ['mpc', CMD_PLAY]
-            run_process(cmd)
-            cmd = ['mpc', CMD_ADD, url]
-            run_process(cmd)
-            cmd = ['mpc', CMD_NEXT]
-            run_process(cmd)
-
-            load_cfg()
-
-    elif action == 'del':
-        if (id > 0) and (id <= len(url_list)):
-
-            cmd = ['mpc', CMD_DEL, str(id)]
-            run_process(cmd)
-
-            load_cfg()
-
-    elif action == 'play':
-        if (id > 0) and (id <= len(url_list)):
-
-            cmd = ['mpc', CMD_PLAY, str(id)]
-            run_process(cmd)
-
-    elif action == 'stop':
-        current = 0
-        cmd = ['mpc', CMD_STOP]
-        run_process(cmd)
-
-    elif action == 'vol_up':
-        cmd = ['xdotool', "key", "XF86AudioRaiseVolume"]
-        run_process(cmd)
-
-    elif action == 'vol_dn':
-        cmd = ['xdotool', "key", "XF86AudioLowerVolume"]
-        run_process(cmd)
-
+def start_mpv(url):
+    """Start mpv process with IPC socket."""
+    global mpv_process
+    if mpv_process is None or mpv_process.poll() is not None:
+        # Remove old socket if exists
+        if os.path.exists(ipc_socket_path):
+            os.remove(ipc_socket_path)
+        mpv_process = subprocess.Popen([
+            "mpv",
+            "--no-video",
+            "--really-quiet",
+            f"--volume={current_volume}",
+            f"--input-ipc-server={ipc_socket_path}",
+            url
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # Wait briefly to allow socket creation
+        time.sleep(0.5)
     else:
-        cur_cmd = ['mpc', CMD_CURRENT]
-        current_text = run_process(cur_cmd)
-        if len(current_text) > 2:
-            try:
-                song_title = current_text.split(':')[1]
-            except:
-                song_title = current_text
+        load_url(url)
+
+
+def init():
+    global ip_message
+
+    ip = get_wifi_ip("wlan0")
+    if ip:
+        ip_message = f"{ip}"
+    else:
+        ip = get_wifi_ip("eth0")
+        if ip:
+            ip_message = f"{ip}"
         else:
-            song_title = ''
+            ip_message = "No WiFi IP"
 
-        return render_template('index.html', stream_list=url_list, current=current, song_title=song_title)
-
-    return redirect(url_for('home'))
-
-
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(SCRIPT_PATH, 'assets/favicon.ico', mimetype='image/vnd.microsoft.icon')
+    lcd.LCD_init()
+    lcd.LCD_Backlight(True)
+    gpio_setup()
 
 
-if __name__ == '__main__':
-    load_cfg()
-    app.run('0.0.0.0', WEB_PORT, threaded=True, debug=False)
+def lcd_write(message = "", cursor_pos = 0):
+    try:
+        lcd.LCD_SetCursor(cursor_pos)
+        lcd.LCD_Write(message)
+    finally:
+        pass
+
+
+def mpv_ipc_command(cmd):
+    """Send JSON command to mpv IPC socket."""
+    try:
+        client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        client.connect("/tmp/mpvsocket")
+        client.sendall((json.dumps(cmd) + "\n").encode("utf-8"))
+        client.close()
+    except FileNotFoundError:
+        # mpv not running
+        pass
+
+def play_station(station_url, label):
+    lcd_write(label, 16)
+    start_mpv(station_url)
+
+def set_volume(vol):
+    cmd = {"command": ["set_property", "volume", vol]}
+    mpv_ipc_command(cmd)
+
+def load_url(url):
+    cmd = {"command": ["loadfile", url, "replace"]}
+    mpv_ipc_command(cmd)
+
+def stop():
+    cmd = {"command": ["stop"]}
+    mpv_ipc_command(cmd)
+
+def volume_up():
+    global current_volume
+    current_volume = min(100, current_volume + 10)
+    set_volume(current_volume)
+
+def volume_down():
+    global current_volume
+    current_volume = max(0, current_volume - 10)
+    set_volume(current_volume)
+
+def next_station():
+    global current_station_id
+
+    if current_station_id < (len(PLAYLIST) - 1):
+        current_station_id = current_station_id + 1
+    else:
+        current_station_id = 0
+
+    station = PLAYLIST[current_station_id]
+    play_station(station.get("url"), station.get("id"))
+
+
+def previous_station():
+    global current_station_id
+
+    if current_station_id > 0:
+        current_station_id = current_station_id - 1
+    else:
+        current_station_id = len(PLAYLIST)-1
+
+    station = PLAYLIST[current_station_id]
+    play_station(station.get("url"), station.get("id"))
+
+
+def play_radio():
+    try:
+        while True:
+            if not GPIO.input(BTN_NEXT):
+                btn_timestamp = time.time()
+
+                long_press_flag = False
+                while not GPIO.input(BTN_NEXT):
+                    time.sleep(0.1)
+                    if time.time() - btn_timestamp > 2:
+                        long_press_flag = True
+                        while not GPIO.input(BTN_NEXT):
+                            time.sleep(1)
+                            volume_up()
+
+                if not long_press_flag:
+                    next_station()
+
+            elif not GPIO.input(BTN_PREV):
+                btn_timestamp = time.time()
+
+                long_press_flag = False
+                while not GPIO.input(BTN_PREV):
+                    time.sleep(0.1)
+                    if time.time() - btn_timestamp > 2:
+                        long_press_flag = True
+                        while not GPIO.input(BTN_PREV):
+                            time.sleep(1)
+                            volume_down()
+
+                if not long_press_flag:
+                    previous_station()
+
+            time.sleep(0.1)
+
+    finally:
+        with mpv_lock:
+            if mpv_process and mpv_process.poll() is None:
+                mpv_process.terminate()
+        GPIO.cleanup()
+
+init()
+lcd_write(ip_message, 0)
+
+while ip_message == "":
+    time.sleep(1)
+    lcd_write(ip_message, 0)
+
+lcd_write(ip_message, 0)
+station = PLAYLIST[current_station_id]
+play_station(station.get("url"), station.get("id"))
+play_radio()
+lcd.close()
