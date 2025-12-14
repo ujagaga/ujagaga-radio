@@ -78,11 +78,42 @@ def mpv_ipc_request(cmd):
         return None
 
 
-def mpv_get(prop):
-    resp = mpv_ipc_request({"command": ["get_property", prop]})
-    if resp and "data" in resp:
-        return resp["data"]
+def mpv_get(property_name):
+    try:
+        client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        client.connect(ipc_socket_path)
+
+        cmd = {
+            "command": ["get_property", property_name],
+            "request_id": 1
+        }
+        client.sendall((json.dumps(cmd) + "\n").encode("utf-8"))
+
+        data = client.recv(4096).decode("utf-8")
+        client.close()
+
+        resp = json.loads(data)
+        if resp.get("error") == "success":
+            return resp.get("data")
+    except Exception:
+        pass
     return None
+
+def get_song_title():
+    title = mpv_get("media-title")
+    if title:
+        return title.strip()
+
+    title = mpv_get("metadata/by-key/icy-title")
+    if title:
+        return title.strip()
+
+    title = mpv_get("metadata/by-key/title")
+    if title:
+        return title.strip()
+
+    return ""
+
 
 def wait_for_mpv_ready(timeout=5):
     start = time.time()
@@ -120,6 +151,17 @@ def wait_for_playback(timeout=5):
     return False
 
 
+def metadata_worker():
+    last_title = ""
+    while True:
+        title = get_song_title()
+        if title and title != last_title:
+            lcd.LCD_WriteRow(1, title)
+            last_title = title
+        time.sleep(1)
+
+
+
 def try_station(station):
     lcd.LCD_WriteRow(1, station["id"])
     load_url(station["url"])
@@ -142,6 +184,8 @@ def init():
     lcd.LCD_init()
     lcd.LCD_Backlight(True)
     gpio_setup()
+    start_mpv()
+
 
 def mpv_ipc_command(cmd):
     """Send JSON command to mpv IPC socket."""
@@ -210,6 +254,8 @@ def previous_station():
 
 def play_radio():
     if start_mpv():
+        t = threading.Thread(target=metadata_worker, daemon=True)
+        t.start()
         try_station(PLAYLIST[current_station_id])
     else:
         lcd.LCD_WriteRow(1, "mpv failed")
@@ -265,7 +311,6 @@ while ip_message == "":
     time.sleep(1)
     lcd.LCD_WriteRow(0, ip_message)
 lcd.LCD_WriteRow(0, ip_message)
-start_mpv()
 time.sleep(5)
 play_radio()
 lcd.close()
