@@ -18,7 +18,7 @@ BTN_PREV = 11
 lcd = LCD1602(i2c_addr=0x27, i2c_bus=0)
 ip_message = ""
 current_station_id = 0
-current_volume = 20
+current_volume = 40
 ipc_socket_path = "/tmp/mpvsocket"
 mpv_process = None
 mpv_lock = threading.Lock()
@@ -47,8 +47,9 @@ def gpio_setup():
 
 def start_mpv():
     global mpv_process
+
     if mpv_process and mpv_process.poll() is None:
-        return
+        return True
 
     if os.path.exists(ipc_socket_path):
         os.remove(ipc_socket_path)
@@ -62,7 +63,8 @@ def start_mpv():
         f"--input-ipc-server={ipc_socket_path}"
     ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    time.sleep(0.5)
+    return wait_for_mpv_ready()
+
 
 def mpv_ipc_request(cmd):
     try:
@@ -81,6 +83,21 @@ def mpv_get(prop):
     if resp and "data" in resp:
         return resp["data"]
     return None
+
+def wait_for_mpv_ready(timeout=5):
+    start = time.time()
+    while time.time() - start < timeout:
+        if mpv_process and mpv_process.poll() is not None:
+            return False
+
+        if os.path.exists(ipc_socket_path):
+            idle = mpv_get("core-idle")
+            if idle is True:
+                return True
+
+        time.sleep(0.1)
+    return False
+
 
 
 def wait_for_playback(timeout=5):
@@ -192,8 +209,11 @@ def previous_station():
 
 
 def play_radio():
-    start_mpv()
-    try_station(PLAYLIST[current_station_id])
+    if start_mpv():
+        try_station(PLAYLIST[current_station_id])
+    else:
+        lcd.LCD_WriteRow(1, "mpv failed")
+
     try:
         while True:
             if not GPIO.input(BTN_NEXT):
@@ -245,6 +265,7 @@ while ip_message == "":
     time.sleep(1)
     lcd.LCD_WriteRow(0, ip_message)
 lcd.LCD_WriteRow(0, ip_message)
+start_mpv()
 time.sleep(5)
 play_radio()
 lcd.close()
