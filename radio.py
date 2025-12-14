@@ -163,7 +163,7 @@ def metadata_worker():
 
 
 def try_station(station):
-    lcd.LCD_WriteRow(1, station["id"])
+    lcd.LCD_WriteRow(0, station["id"])
     load_url(station["url"])
     return wait_for_playback()
 
@@ -235,7 +235,7 @@ def next_station():
             return
         attempts += 1
 
-    lcd.LCD_WriteRow(1, "No stations")
+    lcd.LCD_WriteRow(0, "No stations")
 
 
 def previous_station():
