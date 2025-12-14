@@ -103,12 +103,10 @@ def mpv_get(property_name):
 def get_song_title():
     title = mpv_get("metadata/by-key/icy-title")
     if title:
-        print("T1: ", title.strip())
         return title.strip()
 
     title = mpv_get("metadata/by-key/title")
     if title:
-        print("T2: ", title.strip())
         return title.strip()
 
     return "  "
@@ -127,7 +125,6 @@ def wait_for_mpv_ready(timeout=5):
 
         time.sleep(0.1)
     return False
-
 
 
 def wait_for_playback(timeout=5):
