@@ -111,8 +111,7 @@ def get_song_title():
         print("T2: ", title.strip())
         return title.strip()
 
-    print("T3: ")
-    return ""
+    return "  "
 
 
 def wait_for_mpv_ready(timeout=5):
@@ -150,10 +149,8 @@ def wait_for_playback(timeout=5):
 
     return False
 
-last_title = ""
 def metadata_worker():
-    global last_title
-
+    last_title = ""
     while True:
         title = get_song_title()
         if title and title != last_title:
@@ -223,9 +220,7 @@ def volume_down():
 
 def next_station():
     global current_station_id
-    global last_title
     start_mpv()
-    last_title = ""
 
     attempts = 0
     while attempts < len(PLAYLIST):
@@ -240,8 +235,6 @@ def next_station():
 def previous_station():
     global current_station_id
     start_mpv()
-    last_title = ""
-
     attempts = 0
     while attempts < len(PLAYLIST):
         current_station_id = (current_station_id - 1) % len(PLAYLIST)
