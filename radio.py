@@ -115,11 +115,13 @@ def stop():
 
 def volume_up():
     global current_volume
+    print("Vol up", time.time)
     current_volume = min(100, current_volume + 10)
     set_volume(current_volume)
 
 def volume_down():
     global current_volume
+    print("Vol down", time.time)
     current_volume = max(0, current_volume - 10)
     set_volume(current_volume)
 
