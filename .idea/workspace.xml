@@ -6,33 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="7e3afcba-2d70-43b6-8cd4-ace0da1892d1" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/custom.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/del.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/fonts.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/favicon.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/custom.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-brands-400.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-brands-400.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-brands-400.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-brands-400.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-brands-400.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-regular-400.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-regular-400.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-regular-400.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-regular-400.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-regular-400.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-solid-900.eot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-solid-900.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-solid-900.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-solid-900.woff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/webfonts/fa-solid-900.woff2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mpd.conf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gpio_control/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gpio_control/gpiocmd.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gpio_control/rc.local" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gpio_control/setup.sh" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/radio.py" beforeDir="false" afterPath="$PROJECT_DIR$/radio.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sample_playlist.m3u" beforeDir="false" afterPath="$PROJECT_DIR$/playlist.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.sh" beforeDir="false" afterPath="$PROJECT_DIR$/setup.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/show_ip.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spi_lcd_16x2.py" beforeDir="false" afterPath="$PROJECT_DIR$/spi_lcd_16x2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

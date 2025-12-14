@@ -74,7 +74,7 @@ def init():
 
     ip = get_wifi_ip("wlan0")
     if ip:
-        ip_message = f"{ip}"
+        ip_message = f"IP ADDRESS OF WIFI: {ip}"
     else:
         ip = get_wifi_ip("eth0")
         if ip:
@@ -85,15 +85,6 @@ def init():
     lcd.LCD_init()
     lcd.LCD_Backlight(True)
     gpio_setup()
-
-
-def lcd_write(message = "", cursor_pos = 0):
-    try:
-        lcd.LCD_SetCursor(cursor_pos)
-        lcd.LCD_Write(message)
-    finally:
-        pass
-
 
 def mpv_ipc_command(cmd):
     """Send JSON command to mpv IPC socket."""
@@ -107,7 +98,7 @@ def mpv_ipc_command(cmd):
         pass
 
 def play_station(station_url, label):
-    lcd_write(label, 16)
+    lcd.LCD_WriteRow(1, label)
     start_mpv(station_url)
 
 def set_volume(vol):
@@ -157,6 +148,8 @@ def previous_station():
 
 
 def play_radio():
+    station = PLAYLIST[current_station_id]
+    play_station(station.get("url"), station.get("id"))
     try:
         while True:
             if not GPIO.input(BTN_NEXT):
@@ -198,14 +191,12 @@ def play_radio():
         GPIO.cleanup()
 
 init()
-lcd_write(ip_message, 0)
+lcd.LCD_WriteRow(0, ip_message)
 
 while ip_message == "":
     time.sleep(1)
-    lcd_write(ip_message, 0)
+    lcd.LCD_WriteRow(0, ip_message)
 
-lcd_write(ip_message, 0)
-station = PLAYLIST[current_station_id]
-play_station(station.get("url"), station.get("id"))
+lcd.LCD_WriteRow(0, ip_message)
 play_radio()
 lcd.close()
