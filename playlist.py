@@ -5,5 +5,4 @@ PLAYLIST = [
     {"url": "https://stream.playradio.rs:8443/play.mp3", "id": "Play Radio"},
     {"url": "https://stream.playradio.rs:8443/party.mp3", "id": "Play Party"},
     {"url": "https://stream.playradio.rs:8443/soft.mp3", "id": "Play Soft"},
-    {"url": "http://sradio2.ipradio.rs:8002/;", "id": "Radio S2"},
     ]
