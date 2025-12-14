@@ -12,11 +12,8 @@ import socket
 import json
 import os
 
-
-BTN_NEXT = 11
-BTN_PREV = 13
-# BTN_VOLUP = 19
-# BTN_VOLDOWN = 18
+BTN_NEXT = 13
+BTN_PREV = 11
 
 lcd = LCD1602(i2c_addr=0x27, i2c_bus=0)
 ip_message = ""
@@ -48,25 +45,68 @@ def gpio_setup():
                pull_up_down=GPIO.PUD_UP)
 
 
-def start_mpv(url):
-    """Start mpv process with IPC socket."""
+def start_mpv():
     global mpv_process
-    if mpv_process is None or mpv_process.poll() is not None:
-        # Remove old socket if exists
-        if os.path.exists(ipc_socket_path):
-            os.remove(ipc_socket_path)
-        mpv_process = subprocess.Popen([
-            "mpv",
-            "--no-video",
-            "--really-quiet",
-            f"--volume={current_volume}",
-            f"--input-ipc-server={ipc_socket_path}",
-            url
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        # Wait briefly to allow socket creation
-        time.sleep(0.5)
-    else:
-        load_url(url)
+    if mpv_process and mpv_process.poll() is None:
+        return
+
+    if os.path.exists(ipc_socket_path):
+        os.remove(ipc_socket_path)
+
+    mpv_process = subprocess.Popen([
+        "mpv",
+        "--idle=yes",
+        "--no-video",
+        "--really-quiet",
+        f"--volume={current_volume}",
+        f"--input-ipc-server={ipc_socket_path}"
+    ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    time.sleep(0.5)
+
+def mpv_ipc_request(cmd):
+    try:
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(ipc_socket_path)
+        s.sendall((json.dumps(cmd) + "\n").encode())
+        data = s.recv(4096).decode()
+        s.close()
+        return json.loads(data) if data else None
+    except:
+        return None
+
+
+def mpv_get(prop):
+    resp = mpv_ipc_request({"command": ["get_property", prop]})
+    if resp and "data" in resp:
+        return resp["data"]
+    return None
+
+
+def wait_for_playback(timeout=5):
+    start = time.time()
+    while time.time() - start < timeout:
+        if mpv_process.poll() is not None:
+            return False  # mpv crashed
+
+        playback_time = mpv_get("playback-time")
+        idle = mpv_get("core-idle")
+
+        if playback_time and playback_time > 0:
+            return True
+
+        if idle is False:
+            return True
+
+        time.sleep(0.2)
+
+    return False
+
+
+def try_station(station):
+    lcd.LCD_WriteRow(1, station["id"])
+    load_url(station["url"])
+    return wait_for_playback()
 
 
 def init():
@@ -115,43 +155,45 @@ def stop():
 
 def volume_up():
     global current_volume
-    print("Vol up", time.time)
     current_volume = min(100, current_volume + 10)
     set_volume(current_volume)
 
 def volume_down():
     global current_volume
-    print("Vol down", time.time)
     current_volume = max(0, current_volume - 10)
     set_volume(current_volume)
 
 def next_station():
     global current_station_id
+    start_mpv()
 
-    if current_station_id < (len(PLAYLIST) - 1):
-        current_station_id = current_station_id + 1
-    else:
-        current_station_id = 0
+    attempts = 0
+    while attempts < len(PLAYLIST):
+        current_station_id = (current_station_id + 1) % len(PLAYLIST)
+        if try_station(PLAYLIST[current_station_id]):
+            return
+        attempts += 1
 
-    station = PLAYLIST[current_station_id]
-    play_station(station.get("url"), station.get("id"))
+    lcd.LCD_WriteRow(1, "No stations")
 
 
 def previous_station():
     global current_station_id
+    start_mpv()
 
-    if current_station_id > 0:
-        current_station_id = current_station_id - 1
-    else:
-        current_station_id = len(PLAYLIST)-1
+    attempts = 0
+    while attempts < len(PLAYLIST):
+        current_station_id = (current_station_id - 1) % len(PLAYLIST)
+        if try_station(PLAYLIST[current_station_id]):
+            return
+        attempts += 1
 
-    station = PLAYLIST[current_station_id]
-    play_station(station.get("url"), station.get("id"))
+    lcd.LCD_WriteRow(1, "No stations")
 
 
 def play_radio():
-    station = PLAYLIST[current_station_id]
-    play_station(station.get("url"), station.get("id"))
+    start_mpv()
+    try_station(PLAYLIST[current_station_id])
     try:
         while True:
             if not GPIO.input(BTN_NEXT):
