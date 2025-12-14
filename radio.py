@@ -99,15 +99,19 @@ def mpv_get(property_name):
         pass
     return None
 
+
 def get_song_title():
     title = mpv_get("metadata/by-key/icy-title")
     if title:
+        print("T1: ", title.strip())
         return title.strip()
 
     title = mpv_get("metadata/by-key/title")
     if title:
+        print("T2: ", title.strip())
         return title.strip()
 
+    print("T3: ")
     return ""
 
 
@@ -146,9 +150,10 @@ def wait_for_playback(timeout=5):
 
     return False
 
-
+last_title = ""
 def metadata_worker():
-    last_title = ""
+    global last_title
+
     while True:
         title = get_song_title()
         if title and title != last_title:
@@ -218,6 +223,7 @@ def volume_down():
 
 def next_station():
     global current_station_id
+    global last_title
     start_mpv()
     last_title = ""
 
