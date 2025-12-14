@@ -74,7 +74,7 @@ def init():
 
     ip = get_wifi_ip("wlan0")
     if ip:
-        ip_message = f"IP ADDRESS OF WIFI: {ip}"
+        ip_message = f"{ip}"
     else:
         ip = get_wifi_ip("eth0")
         if ip:
@@ -160,9 +160,11 @@ def play_radio():
                     time.sleep(0.1)
                     if time.time() - btn_timestamp > 2:
                         long_press_flag = True
-                        while not GPIO.input(BTN_NEXT):
-                            time.sleep(1)
-                            volume_up()
+                        press_count = 0
+                        volume_up()
+                        while not GPIO.input(BTN_NEXT) and press_count < 2:
+                            time.sleep(0.5)
+                            press_count += 1
 
                 if not long_press_flag:
                     next_station()
@@ -175,9 +177,11 @@ def play_radio():
                     time.sleep(0.1)
                     if time.time() - btn_timestamp > 2:
                         long_press_flag = True
-                        while not GPIO.input(BTN_PREV):
-                            time.sleep(1)
-                            volume_down()
+                        press_count = 0
+                        volume_down()
+                        while not GPIO.input(BTN_PREV) and press_count < 2:
+                            time.sleep(0.5)
+                            press_count += 1
 
                 if not long_press_flag:
                     previous_station()
@@ -196,7 +200,7 @@ lcd.LCD_WriteRow(0, ip_message)
 while ip_message == "":
     time.sleep(1)
     lcd.LCD_WriteRow(0, ip_message)
-
 lcd.LCD_WriteRow(0, ip_message)
+time.sleep(5)
 play_radio()
 lcd.close()

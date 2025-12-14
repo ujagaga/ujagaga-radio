@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7e3afcba-2d70-43b6-8cd4-ace0da1892d1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gpio_control/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gpio_control/gpiocmd.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gpio_control/rc.local" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gpio_control/setup.sh" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/radio.py" beforeDir="false" afterPath="$PROJECT_DIR$/radio.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spi_lcd_16x2.py" beforeDir="false" afterPath="$PROJECT_DIR$/spi_lcd_16x2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
