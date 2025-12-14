@@ -100,10 +100,6 @@ def mpv_get(property_name):
     return None
 
 def get_song_title():
-    # title = mpv_get("media-title")
-    # if title:
-    #     return title.strip()
-
     title = mpv_get("metadata/by-key/icy-title")
     if title:
         return title.strip()
@@ -198,10 +194,6 @@ def mpv_ipc_command(cmd):
         # mpv not running
         pass
 
-def play_station(station_url, label):
-    lcd.LCD_WriteRow(0, label)
-    start_mpv(station_url)
-
 def set_volume(vol):
     cmd = {"command": ["set_property", "volume", vol]}
     mpv_ipc_command(cmd)
@@ -227,6 +219,7 @@ def volume_down():
 def next_station():
     global current_station_id
     start_mpv()
+    last_title = ""
 
     attempts = 0
     while attempts < len(PLAYLIST):
@@ -241,6 +234,7 @@ def next_station():
 def previous_station():
     global current_station_id
     start_mpv()
+    last_title = ""
 
     attempts = 0
     while attempts < len(PLAYLIST):
