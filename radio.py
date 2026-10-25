@@ -160,6 +160,8 @@ def execute_action(data):
             raise ValueError('No new http or https stream URLs found in the playlist.')
         with db:
             db.executemany('INSERT INTO stations (url) VALUES (?)', [(url,) for url in new])
+        # Starts once radio_lock is released; the page updates as names arrive.
+        threading.Thread(target=fetch_missing_names, daemon=True).start()
     elif action == 'stop':
         run_process(['mpc', 'stop'])
     elif action in ('vol_up', 'vol_dn'):
