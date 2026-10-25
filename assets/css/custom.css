@@ -52,7 +52,7 @@ button:focus-visible,a:focus-visible,input:focus-visible {
 }
 /* Page fills the window; only the station list scrolls, the player stays visible. */
 main {
-  padding-top:32px;
+  padding-top:5px;
   flex:1;
   min-height:0;
   display:flex;
@@ -117,11 +117,6 @@ h1 {
   letter-spacing:-1.3px;
   font-size:39px;
   margin:0 0 12px;
-}
-.section-head p {
-  color:var(--muted);
-  font-size:14px;
-  margin:0;
 }
 .button {
   display:inline-flex;
@@ -375,53 +370,6 @@ h1 {
   overflow-y:auto;
   padding-bottom:16px;
 }
-.section-head {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:23px;
-}
-.section-head h2 {
-  font-size:21px;
-  letter-spacing:-.5px;
-  margin:0 0 8px;
-}
-.count {
-  font-size:11px;
-  background:#e5e6db;
-  color:#69705e;
-  padding:4px 8px;
-  border-radius:6px;
-  vertical-align:middle;
-  margin-left:6px;
-}
-.section-head p {
-  font-size:12px;
-}
-.search {
-  display:flex;
-  align-items:center;
-  gap:9px;
-  border:1px solid var(--line);
-  border-radius:7px;
-  padding:11px 13px;
-  background:#faf9f5;
-  width:230px;
-  color:#909488;
-}
-.search svg {
-  width:17px;
-  height:17px;
-}
-.search input {
-  width:100%;
-  min-width:0;
-  border:0;
-  outline:0;
-  background:transparent;
-  font-size:12px;
-  color:var(--ink);
-}
 .station-list {
   list-style:none;
   padding:0;
@@ -674,7 +622,7 @@ dialog .button {
     padding:0 20px;
   }
   main {
-    padding-top:20px;
+    padding-top:5px;
   }
   .brand {
     font-size:19px;
@@ -777,14 +725,6 @@ dialog .button {
   }
   .stations {
     padding-top:20px;
-  }
-  .section-head {
-    gap:18px;
-    align-items:start;
-    flex-wrap:wrap;
-  }
-  .search {
-    width:100%;
   }
   .station {
     gap:11px;

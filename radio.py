@@ -174,8 +174,7 @@ def execute_action(data):
 def state_message():
     return {'type': 'state', 'version': state_version,
             'player_html': render_template('_player.html', **state),
-            'stations_html': render_template('_station_list.html', **state),
-            'count': len(state['stream_list'])}
+            'stations_html': render_template('_station_list.html', **state)}
 
 
 @app.route('/', methods=['GET', 'POST'])

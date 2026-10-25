@@ -14,14 +14,13 @@
     <main>
       <p id="connection-status" role="status" hidden></p>
       <div id="player-content">{% include '_player.html' %}</div>
-      <section class="stations" id="stations" aria-labelledby="stations-title"><div class="section-head"><div><h2 id="stations-title">Your stations <span class="count">{{ stream_list | length }}</span></h2></div><label class="search">{{ icon('search') }}<input id="station-search" type="search" placeholder="Find a station…" aria-label="Find a station"></label></div>
+      <section class="stations" id="stations" aria-label="Stations">
         <div id="station-content">{% include '_station_list.html' %}</div>
       </section>
     </main>
   </div>
   <input type="file" id="playlist-file" accept=".m3u,.m3u8,audio/x-mpegurl" hidden>
   <dialog id="add-dialog"><form method="get" action="/"><div class="dialog-header"><h2>Add a station</h2><button type="button" class="icon-button" data-close-dialog aria-label="Close">{{ icon('close') }}</button></div><p>Bring a new sound home. Paste a radio stream URL below.</p><input type="hidden" name="action" value="add"><label for="stream-url">Stream URL</label><input id="stream-url" name="url" type="url" placeholder="https://radio.example.com/stream" required><p class="form-hint">Use the direct audio stream link from your radio station.</p><button class="button primary" type="submit">{{ icon('plus') }} Add & play station</button></form></dialog>
-  <dialog id="delete-dialog"><form method="get" action="/"><div class="dialog-header"><h2>Remove station?</h2><button type="button" class="icon-button" data-close-dialog aria-label="Close">{{ icon('close') }}</button></div><p id="delete-description"></p><input type="hidden" name="action" value="del" id="delete-action"><input type="hidden" name="id" id="delete-id"><input type="hidden" name="ids" id="delete-ids"><button class="button primary" type="submit">Remove station</button></form></dialog>
   <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
 </body>
 </html>

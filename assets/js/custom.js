@@ -1,6 +1,4 @@
 const addDialog = document.querySelector('#add-dialog');
-const deleteDialog = document.querySelector('#delete-dialog');
-const search = document.querySelector('#station-search');
 const connectionStatus = document.querySelector('#connection-status');
 const playlistFile = document.querySelector('#playlist-file');
 let socket;
@@ -17,15 +15,6 @@ function showStatus(message) {
         status.textContent = message;
         status.hidden = !message;
     });
-}
-
-function filterStations() {
-    const stations = [...document.querySelectorAll('.station')];
-    const query = search.value.trim().toLocaleLowerCase();
-    stations.forEach(station => { station.hidden = !station.dataset.name.includes(query); });
-    if (stations.length) {
-        document.querySelector('#empty-state').hidden = stations.some(station => !station.hidden);
-    }
 }
 
 function checkedIds() {
@@ -68,16 +57,14 @@ function connect() {
             const focused = document.activeElement;
             const focusLabel = focused && focused.getAttribute('aria-label');
             const focusContainer = focused && focused.closest('#player-content, #station-content');
-            // Keep selections across re-renders unless the number of stations changed.
-            const checked = Number(document.querySelector('.count').textContent) === message.count ? checkedIds() : [];
+            // Keep selections across re-renders; station ids are stable database ids.
+            const checked = checkedIds();
             document.querySelector('#player-content').innerHTML = message.player_html;
             document.querySelector('#station-content').innerHTML = message.stations_html;
-            document.querySelector('.count').textContent = message.count;
             document.querySelectorAll('.station-check').forEach(check => { check.checked = checked.includes(check.value); });
             updateDeleteSelected();
             version = message.version;
             retryDelay = 500;
-            filterStations();
             if (focusContainer && focusLabel) {
                 const target = [...focusContainer.querySelectorAll('[aria-label]')]
                     .find(element => element.getAttribute('aria-label') === focusLabel);
@@ -118,25 +105,14 @@ document.addEventListener('click', event => {
         if (button.hasAttribute('data-add-playlist')) {
             playlistFile.click();
         } else if (button.hasAttribute('data-delete-selected')) {
-            const ids = checkedIds();
-            document.querySelector('#delete-action').value = 'del_many';
-            document.querySelector('#delete-id').value = '';
-            document.querySelector('#delete-ids').value = ids.join(',');
-            document.querySelector('#delete-description').textContent = `Remove ${ids.length} selected station${ids.length === 1 ? '' : 's'}? You can add them again with their stream URLs.`;
-            deleteDialog.showModal();
-            showStatus(connectionStatus.textContent);
+            sendCommand({ action: 'del_many', ids: checkedIds().join(',') });
         } else if (button.hasAttribute('data-add-station')) {
             addDialog.showModal();
             document.querySelector('#stream-url').focus();
         } else if (button.hasAttribute('data-close-dialog')) {
             button.closest('dialog').close();
         } else {
-            document.querySelector('#delete-action').value = 'del';
-            document.querySelector('#delete-ids').value = '';
-            document.querySelector('#delete-id').value = button.dataset.deleteId;
-            document.querySelector('#delete-description').textContent = `Remove “${button.dataset.stationName}” from your stations? You can add it again with its stream URL.`;
-            deleteDialog.showModal();
-            showStatus(connectionStatus.textContent);
+            sendCommand({ action: 'del', id: button.dataset.deleteId });
         }
         return;
     }
@@ -181,5 +157,4 @@ playlistFile.addEventListener('change', async () => {
 document.addEventListener('change', event => {
     if (event.target.matches('.station-check')) updateDeleteSelected();
 });
-search.addEventListener('input', filterStations);
 connect();
