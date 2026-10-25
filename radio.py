@@ -227,6 +227,21 @@ def radio_socket(ws):
         pass
 
 
+@app.route('/export.m3u')
+def export_playlist():
+    # Extended m3u: the #EXTINF lines keep names; "Add playlist" reads only the URLs back.
+    lines = ['#EXTM3U']
+    with radio_lock:
+        rows = db.execute('SELECT url, name FROM stations '
+                          'ORDER BY favorite DESC, name IS NULL, name COLLATE NOCASE').fetchall()
+    for url, name in rows:
+        if name:
+            lines.append(f'#EXTINF:-1,{name}')
+        lines.append(url)
+    return '\n'.join(lines) + '\n', {'Content-Type': 'audio/x-mpegurl; charset=utf-8',
+                                     'Content-Disposition': 'attachment; filename="ujagaga-radio.m3u"'}
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(SCRIPT_PATH, 'assets/favicon.ico', mimetype='image/vnd.microsoft.icon')

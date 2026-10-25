@@ -331,7 +331,7 @@ h1 {
   gap:9px;
   margin-bottom:18px;
 }
-.station-actions button {
+.station-actions button,.station-actions a {
   display:grid;
   place-items:center;
   border:1px solid #5a6556;
@@ -343,7 +343,7 @@ h1 {
   font-size:14px;
   cursor:pointer;
 }
-.station-actions button:hover {
+.station-actions button:hover,.station-actions a:hover {
   background:#465440;
 }
 .station-actions button[hidden] {

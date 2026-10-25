@@ -32,3 +32,6 @@
 
 .fa-star:before {
   content: "\f005"; }
+
+.fa-download:before {
+  content: "\f019"; }
