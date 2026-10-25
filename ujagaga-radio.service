@@ -1,0 +1,16 @@
+# systemd user service; install_service.sh fills in @DIR@ and installs it.
+[Unit]
+Description=Ujagaga internet radio (mpd + web UI)
+Wants=pipewire-pulse.service
+After=pipewire-pulse.service network-online.target
+
+[Service]
+ExecStart=@DIR@/run_radio.sh
+Restart=always
+RestartSec=5
+# Keep the SD card quiet: drop normal output, only errors reach the journal.
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=default.target

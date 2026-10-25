@@ -1,0 +1,15 @@
+{% from '_icons.html' import icon %}
+        <ol class="station-list">
+        {% for station in stream_list %}
+          <li class="station {{ 'active' if current == station.id else '' }}" data-name="{{ station.name | lower }}">
+            <input type="checkbox" class="station-check" value="{{ station.id }}" aria-label="Select {{ station.name }}">
+            <span class="station-number">{{ '%02d' | format(loop.index) }}</span><span class="station-art color-{{ loop.index0 % 5 }}" aria-hidden="true">{{ icon('radio') }}</span>
+            <div class="station-info"><h3><a href="/?id={{ station.id }}&action=play">{{ station.name }}</a></h3><p>{{ 'On air · Playing now' if current == station.id else 'Internet radio' }}</p></div>
+            {% if current == station.id %}<span class="on-air"><span class="status-dot on"></span> ON AIR</span>{% endif %}
+            <a class="favorite-button {{ 'on' if station.favorite else '' }}" href="/?action=favorite&id={{ station.id }}" role="button" aria-pressed="{{ 'true' if station.favorite else 'false' }}" aria-label="Favorite {{ station.name }}" title="{{ 'Remove from favorites' if station.favorite else 'Add to favorites' }}"><i class="fas fa-star"></i></a>
+            <a class="station-play" href="/?action={{ 'stop' if current == station.id else 'play' }}&id={{ station.id }}" aria-label="{{ 'Stop' if current == station.id else 'Play' }} {{ station.name }}">{{ icon('stop' if current == station.id else 'play') }}</a>
+            <button class="delete-button" data-delete-id="{{ station.id }}" data-station-name="{{ station.name }}" aria-label="Remove {{ station.name }}">{{ icon('trash') }}</button>
+          </li>
+        {% endfor %}
+        </ol>
+        <div class="empty-state" id="empty-state" {% if stream_list %}hidden{% endif %}><h3>{{ 'No matching stations' if stream_list else 'Your next favorite is out there.' }}</h3><p>{{ 'Try a different station name.' if stream_list else 'Add a stream URL to start your collection.' }}</p>{% if not stream_list %}<button class="button primary" data-add-station>{{ icon('plus') }} Add your first station</button>{% endif %}</div>

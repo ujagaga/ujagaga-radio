@@ -1,60 +1,27 @@
+{% from '_icons.html' import icon %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f2eb">
   <title>Ujagaga Radio</title>
-
-  <link rel="stylesheet" href="{{url_for('static', filename='css/custom.css')}}">
-  <link rel="stylesheet" href="{{url_for('static', filename='css/fonts.css')}}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
 </head>
 <body>
-  <div class="container">
-
-    <div class="cmd_btn">
-
-      <p>
-        <a href="/?action=vol_dn"><i class="fa fa-volume-down"></i></a>
-        Station list
-        <a href="/?action=vol_up"><i class="fa fa-volume-up"></i></a>
-      </p>
-    </div>
-
-    <ol>
-      {% for stream_url in stream_list %}
-        <li {% if current == stream_url.id %}class="active_stream"{% endif %} >
-          {{ stream_url.name }}
-
-          {% if stream_url.name.startswith('Loading') %}
-            <script>
-              setTimeout(
-                  function(){ window.location.href = "/"; },
-                  5000
-              );
-            </script>
-          {% endif %}
-
-          <span>
-            {% if current == stream_url.id %}
-              <a href="/?action=stop"><i class="fa fa-stop"></i></a>
-            {% else %}
-              <a href="/?id={{ stream_url.id }}&action=play"><i class="fa fa-play"></i></a>
-            {% endif %}
-            <a href="/?id={{ stream_url.id }}&action=del"><i class="fa fa-trash"></i></a>
-          </span>
-        </li>
-      {% endfor %}
-    </ol>
+  <div class="shell">
+    <main>
+      <p id="connection-status" role="status" hidden></p>
+      <div id="player-content">{% include '_player.html' %}</div>
+      <section class="stations" id="stations" aria-labelledby="stations-title"><div class="section-head"><div><h2 id="stations-title">Your stations <span class="count">{{ stream_list | length }}</span></h2></div><label class="search">{{ icon('search') }}<input id="station-search" type="search" placeholder="Find a station…" aria-label="Find a station"></label></div>
+        <div id="station-content">{% include '_station_list.html' %}</div>
+      </section>
+    </main>
   </div>
-
-  {% if song_title %}
-    <p id="song_title">{{ song_title }}</p>
-  {% endif %}
-  
-  <div id="add_station" onclick="add_url();"><span><i class="fa fa-plus-circle"></i></span></div>
-  <script type="text/javascript" src="{{url_for('static', filename='js/custom.js')}}"></script>
+  <input type="file" id="playlist-file" accept=".m3u,.m3u8,audio/x-mpegurl" hidden>
+  <dialog id="add-dialog"><form method="get" action="/"><div class="dialog-header"><h2>Add a station</h2><button type="button" class="icon-button" data-close-dialog aria-label="Close">{{ icon('close') }}</button></div><p>Bring a new sound home. Paste a radio stream URL below.</p><input type="hidden" name="action" value="add"><label for="stream-url">Stream URL</label><input id="stream-url" name="url" type="url" placeholder="https://radio.example.com/stream" required><p class="form-hint">Use the direct audio stream link from your radio station.</p><button class="button primary" type="submit">{{ icon('plus') }} Add & play station</button></form></dialog>
+  <dialog id="delete-dialog"><form method="get" action="/"><div class="dialog-header"><h2>Remove station?</h2><button type="button" class="icon-button" data-close-dialog aria-label="Close">{{ icon('close') }}</button></div><p id="delete-description"></p><input type="hidden" name="action" value="del" id="delete-action"><input type="hidden" name="id" id="delete-id"><input type="hidden" name="ids" id="delete-ids"><button class="button primary" type="submit">Remove station</button></form></dialog>
+  <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
 </body>
 </html>
-
-
