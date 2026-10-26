@@ -352,6 +352,54 @@ h1 {
 .station-actions [data-delete-selected]:hover {
   color:var(--orange);
 }
+.station-search {
+  border:1px solid #5a6556;
+  border-radius:6px;
+  background:transparent;
+  color:inherit;
+  width:100%;
+  padding:8px 10px;
+  font-size:13px;
+  margin-bottom:18px;
+}
+.station-search::placeholder {
+  color:#a8b1a3;
+}
+.compact .player-side,.compact .track,.compact .playback span,.compact .equalizer,.compact .station-actions,.compact .station-search {
+  display:none;
+}
+/* Pause button sits left of the status and station name. */
+.compact .player-info {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  column-gap:14px;
+  align-items:center;
+}
+.compact .playback {
+  grid-column:1;
+  grid-row:1/3;
+  margin:0;
+}
+.compact .player {
+  padding:12px 20px;
+  align-items:center;
+}
+.compact .player-info {
+  padding:0;
+}
+.compact .player-info .eyebrow {
+  margin:0;
+}
+.compact .player h2 {
+  font-size:18px;
+  margin:6px 0 0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.compact .volume {
+  margin:0;
+}
 .volume p {
   font-size:9px;
   color:#a8b1a3;
@@ -722,6 +770,24 @@ dialog .button {
   .station-actions {
     width:100%;
     margin-bottom:0;
+  }
+  .station-search {
+    margin-bottom:0;
+  }
+  .compact .player {
+    flex-wrap:nowrap;
+    padding:10px 14px;
+  }
+  .compact .player h2 {
+    font-size:16px;
+  }
+  .compact .volume {
+    width:auto;
+    border-top:0;
+    padding:0;
+  }
+  .compact .volume-buttons {
+    width:130px;
   }
   .stations {
     padding-top:20px;

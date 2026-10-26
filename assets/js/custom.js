@@ -6,6 +6,7 @@ let version = null;
 let retryDelay = 500;
 let requestNumber = 0;
 let commandError = '';
+let searchText = '';
 const pending = new Map();
 
 function showStatus(message) {
@@ -28,6 +29,13 @@ function updateDeleteSelected() {
     deleteSelected.hidden = count === 0;
     deleteSelected.title = `Delete ${count} selected`;
     deleteSelected.setAttribute('aria-label', deleteSelected.title);
+}
+
+function filterStations() {
+    const text = searchText.trim().toLowerCase();
+    document.querySelectorAll('.station').forEach(station => {
+        station.hidden = !station.querySelector('h3').textContent.toLowerCase().includes(text);
+    });
 }
 
 function sendCommand(data, onSuccess, onFinish = () => {}) {
@@ -59,16 +67,20 @@ function connect() {
             const focusContainer = focused && focused.closest('#player-content, #station-content');
             // Keep selections across re-renders; station ids are stable database ids.
             const checked = checkedIds();
+            const caret = focused && focused.matches('.station-search') ? [focused.selectionStart, focused.selectionEnd] : null;
             document.querySelector('#player-content').innerHTML = message.player_html;
             document.querySelector('#station-content').innerHTML = message.stations_html;
             document.querySelectorAll('.station-check').forEach(check => { check.checked = checked.includes(check.value); });
             updateDeleteSelected();
+            document.querySelector('.station-search').value = searchText;
+            filterStations();
             version = message.version;
             retryDelay = 500;
             if (focusContainer && focusLabel) {
                 const target = [...focusContainer.querySelectorAll('[aria-label]')]
                     .find(element => element.getAttribute('aria-label') === focusLabel);
                 if (target) target.focus({ preventScroll: true });
+                if (target && caret) target.setSelectionRange(...caret);
             }
             showStatus(commandError);
         } else if (message.type === 'ack' || message.type === 'error') {
@@ -156,5 +168,26 @@ playlistFile.addEventListener('change', async () => {
 });
 document.addEventListener('change', event => {
     if (event.target.matches('.station-check')) updateDeleteSelected();
+});
+document.addEventListener('input', event => {
+    if (!event.target.matches('.station-search')) return;
+    searchText = event.target.value;
+    filterStations();
+});
+// Shrink the player to a strip while the station list is scrolled away from the top.
+const stationContent = document.querySelector('#station-content');
+const playerContent = document.querySelector('#player-content');
+stationContent.addEventListener('scroll', () => {
+    const main = document.querySelector('main');
+    const compact = stationContent.scrollTop > 0;
+    if (main.classList.contains('compact') === compact) return;
+    const from = playerContent.offsetHeight;
+    main.classList.toggle('compact', compact);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const to = playerContent.offsetHeight;
+    playerContent.animate([
+        { height: `${from}px`, overflow: 'hidden' },
+        { height: `${to}px`, overflow: 'hidden' },
+    ], { duration: 500, easing: 'ease' });
 });
 connect();
