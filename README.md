@@ -29,7 +29,7 @@ on any Linux desktop with PipeWire.
 ## Running on a desktop
 
 ```bash
-sudo apt install mpd mpc python3-venv
+sudo apt install mpd mpc python3-venv      # Arch / CachyOS: sudo pacman -S mpd mpc python
 # This project starts its own mpd; the system one is not needed
 sudo systemctl disable --now mpd.service mpd.socket
 
@@ -52,7 +52,7 @@ Copy the project to the Pi, then run from the project folder, as the user who wi
 ./install_service.sh
 ```
 
-It installs `mpd`, `mpc` and `python3-venv`, disables the system mpd service, creates `.venv`,
+It installs `mpd`, `mpc` and `python3-venv` (with `apt`, or `pacman` on Arch / CachyOS), disables the system mpd service, creates `.venv`,
 installs `ujagaga-radio.service` as a systemd **user** service and enables lingering, so the
 radio (and the user's PipeWire) start at boot without anyone logging in.
 
